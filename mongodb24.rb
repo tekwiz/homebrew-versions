@@ -51,19 +51,23 @@ class Mongodb24 < Formula
 
     scons "install", *args
 
-    (buildpath+"mongod.conf").write mongodb_conf
-    etc.install "mongod.conf"
+    Dir.glob("#{bin}/*").each do |fn|
+      mv fn, "#{fn}24"
+    end
 
-    (var+"mongodb").mkpath
-    (var+"log/mongodb").mkpath
+    (buildpath+"mongod24.conf").write mongodb_conf
+    etc.install "mongod24.conf"
+
+    (var+"mongodb24").mkpath
+    (var+"log/mongodb24").mkpath
   end
 
   def mongodb_conf; <<-EOS.undent
-    # Store data in #{var}/mongodb instead of the default /data/db
-    dbpath = #{var}/mongodb
+    # Store data in #{var}/mongodb24 instead of the default /data/db
+    dbpath = #{var}/mongodb24
 
-    # Append logs to #{var}/log/mongodb/mongo.log
-    logpath = #{var}/log/mongodb/mongo.log
+    # Append logs to #{var}/log/mongodb24/mongo.log
+    logpath = #{var}/log/mongodb24/mongo.log
     logappend = true
 
     # Only accept local connections
@@ -71,7 +75,7 @@ class Mongodb24 < Formula
     EOS
   end
 
-  plist_options :manual => "mongod --config #{HOMEBREW_PREFIX}/etc/mongod.conf"
+  plist_options :manual => "mongod24 --config #{HOMEBREW_PREFIX}/etc/mongod24.conf"
 
   def plist; <<-EOS.undent
     <?xml version="1.0" encoding="UTF-8"?>
@@ -82,9 +86,9 @@ class Mongodb24 < Formula
       <string>#{plist_name}</string>
       <key>ProgramArguments</key>
       <array>
-        <string>#{opt_bin}/mongod</string>
+        <string>#{opt_bin}/mongod24</string>
         <string>--config</string>
-        <string>#{etc}/mongod.conf</string>
+        <string>#{etc}/mongod24.conf</string>
       </array>
       <key>RunAtLoad</key>
       <true/>
@@ -93,9 +97,9 @@ class Mongodb24 < Formula
       <key>WorkingDirectory</key>
       <string>#{HOMEBREW_PREFIX}</string>
       <key>StandardErrorPath</key>
-      <string>#{var}/log/mongodb/output.log</string>
+      <string>#{var}/log/mongodb24/output.log</string>
       <key>StandardOutPath</key>
-      <string>#{var}/log/mongodb/output.log</string>
+      <string>#{var}/log/mongodb24/output.log</string>
       <key>HardResourceLimits</key>
       <dict>
         <key>NumberOfFiles</key>
@@ -112,6 +116,6 @@ class Mongodb24 < Formula
   end
 
   test do
-    system "#{bin}/mongod", "--sysinfo"
+    system "#{bin}/mongod24", "--sysinfo"
   end
 end
